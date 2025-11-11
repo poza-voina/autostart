@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+  <xs:element name="Configuration">
+    <xs:annotation>
+      <xs:documentation>
+        Главный элемент, содержащий коллекции программ и проектов.
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Programs" type="ProgramsType" minOccurs="0"/>
+        <xs:element name="Projects" type="ProjectsType" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+
+    <!-- Проверка ссылок: Project/start/ProgramName должен существовать в Programs/Program/name -->
+    <xs:key name="ProgramByName">
+      <xs:selector xpath="Programs/Program"/>
+      <xs:field xpath="Name"/>
+    </xs:key>
+    <xs:keyref name="StartProgramRef" refer="ProgramByName">
+      <xs:selector xpath="Projects/Project/Start/ProgramName"/>
+      <xs:field xpath="."/>
+    </xs:keyref>
+
+  </xs:element>
+
+  <!-- тип для списка программ -->
+  <xs:complexType name="ProgramsType">
+    <xs:annotation>
+      <xs:documentation>Список всех доступных программ.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Program" type="ProgramType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- описание одной программы -->
+  <xs:complexType name="ProgramType">
+    <xs:sequence>
+      <xs:element name="Uri" type="xs:string"/>
+      <xs:element name="UriType" type="UriTypeEnum"/>
+      <xs:element name="Name" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- перечисление типов URI -->
+  <xs:simpleType name="UriTypeEnum">
+    <xs:annotation>
+      <xs:documentation>
+        Тип пути: Link — ярлык, Steam — игра в Steam, Browser — ссылка, открываемая в браузере.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Link"/>
+      <xs:enumeration value="Steam"/>
+      <xs:enumeration value="Browser"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- список проектов -->
+  <xs:complexType name="ProjectsType">
+    <xs:annotation>
+      <xs:documentation>Коллекция проектов.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Project" type="ProjectType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- описание одного проекта -->
+  <xs:complexType name="ProjectType">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string"/>
+      <xs:element name="Start" type="StartListType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- список программ для старта -->
+  <xs:complexType name="StartListType">
+    <xs:sequence>
+      <xs:element name="ProgramName" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

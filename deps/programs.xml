@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="schema.xsd">
+
+  <Programs>
+    <Program>
+      <Uri>C:/ProgramData/Microsoft/Windows/Start Menu/Docker Desktop.lnk</Uri>
+      <UriType>Link</UriType>
+      <Name>docker</Name>
+    </Program>
+    <Program>
+      <Uri>C:\Users\pudge\data\links\ts.lnk</Uri>
+      <UriType>Link</UriType>
+      <Name>ts</Name>
+    </Program>
+    <Program>
+      <Uri>570</Uri>
+      <UriType>Steam</UriType>
+      <Name>dota 2</Name>
+    </Program>
+    <Program>
+      <Uri>localhost:4200</Uri>
+      <UriType>Browser</UriType>
+      <Name>angular frontend</Name>
+    </Program>
+  </Programs>
+
+  <Projects>
+    <Project>
+      <Name>diplom</Name>
+      <Start>
+        <ProgramName>docker</ProgramName>
+        <ProgramName>angular frontend</ProgramName>
+      </Start>
+    </Project>
+
+    <Project>
+      <Name>dota</Name>
+      <Start>
+        <ProgramName>dota 2</ProgramName>
+        <ProgramName>ts</ProgramName>
+      </Start>
+    </Project>
+  </Projects>
+</Configuration>
