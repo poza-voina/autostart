@@ -5,11 +5,15 @@ using Application.Services.Interfaces;
 using Application.Strategies;
 using Application.Strategies.Parameters;
 using CommandLine;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace Application;
 
-public class MyApplication(IConfigurationService configurationService, IStrategyFactory strategyFactory)
+public class MyApplication(
+	IConfigurationService configurationService,
+	IStrategyFactory strategyFactory,
+	ILogger<MyApplication> logger)
 {
 	private string? _fileName;
 
@@ -21,13 +25,29 @@ public class MyApplication(IConfigurationService configurationService, IStrategy
 
 	public Task Run(string[] args)
 	{
+		if (args.Length == 0)
+		{
+			Console.WriteLine("Для работы приложения требуется ввести аргументы");
+			return Task.CompletedTask;
+		}
+
 		var options = ParseArguments(args);
+
 		var rootArgument = options.RootArgument;
 
-		var exeDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+		var exeDirectory = string.Empty;
 
-		NotFoundException.ThrowIfNull(_fileName);
-		NotFoundException.ThrowIfNull(exeDirectory);
+		try
+		{
+			exeDirectory = Path.GetDirectoryName(AppContext.BaseDirectory);
+			NotFoundException.ThrowIfNull(_fileName);
+			NotFoundException.ThrowIfNull(exeDirectory);
+		}
+		catch
+		{
+			logger.LogCritical("not found configuration file");
+			throw;
+		}
 
 		var path = Path.Combine(exeDirectory, _fileName);
 
@@ -72,12 +92,12 @@ public class MyApplication(IConfigurationService configurationService, IStrategy
 	{
 		int? rootArgIndex = null;
 		ArgSchema? argschema = null;
-		
+
 		var rootArgsf = typeof(StartOptions)
 			.GetProperties()
-			.Select(p => new { Attr = p.GetCustomAttribute<OptionAttribute>(), IsBool = p.PropertyType.IsAssignableTo(typeof(bool))})
+			.Select(p => new { Attr = p.GetCustomAttribute<OptionAttribute>(), IsBool = p.PropertyType.IsAssignableTo(typeof(bool)) })
 			.Where(x => x != null)
-			.Select(x => new ArgSchema { Name = $"--{x.Attr!.LongName}", IsBool = x.IsBool})
+			.Select(x => new ArgSchema { Name = $"--{x.Attr!.LongName}", IsBool = x.IsBool })
 			.ToList();
 
 		for (var i = 0; i < args.Length; i++)
