@@ -1,6 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Strategies.Parameters;
-using Autostart;
+using Application.XmlSchemas;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Application.Strategies;

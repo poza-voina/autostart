@@ -1,7 +1,7 @@
 ﻿using Application.Exceptions;
 using Application.Services.Interfaces;
 using Application.Strategies.Parameters;
-using Autostart;
+using Application.XmlSchemas;
 
 namespace Application.Strategies;
 

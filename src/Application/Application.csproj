@@ -16,13 +16,8 @@
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Content Include="..\..\deps\programs.xml">
-			<CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
-		</Content>
-		<Content Include="..\..\deps\schema.xsd">
-			<CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
+	<Target Name="CopyDebugDeps" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+		<Copy SourceFiles="..\..\deps\programs.xml" DestinationFolder="$(OutDir)" />
+		<Copy SourceFiles="..\..\deps\schema.xsd" DestinationFolder="$(OutDir)" />
+	</Target>
 </Project>

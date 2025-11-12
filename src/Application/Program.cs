@@ -38,7 +38,6 @@ internal class Program
 
 		host.Start();
 
-
 		try
 		{
 			Log.Information("Application starting...");
@@ -47,6 +46,7 @@ internal class Program
 		}
 		catch (Exception ex)
 		{
+			Console.WriteLine(ex.Message);
 			Log.Fatal(ex, "Application terminated unexpectedly");
 		}
 		finally

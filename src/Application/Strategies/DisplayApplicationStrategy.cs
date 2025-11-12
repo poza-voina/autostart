@@ -1,5 +1,5 @@
 ﻿using Application.Strategies.Parameters;
-using Autostart;
+using Application.XmlSchemas;
 
 namespace Application.Strategies;
 

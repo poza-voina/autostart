@@ -1,4 +1,4 @@
-﻿using Autostart;
+﻿using Application.XmlSchemas;
 
 namespace Application.Services.Interfaces;
 
