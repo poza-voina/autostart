@@ -3,9 +3,9 @@ using Application.XmlSchemas;
 
 namespace Application.Strategies;
 
-public interface IStrategy<TParameters> where TParameters : IParameters
+public interface IStrategy<TParameters, TInputData> where TParameters : IParameters where TInputData : class, IData
 {
-	IStrategy<TParameters> WithParams(Action<TParameters> parameters);
-	IStrategy<TParameters> WithParams(TParameters parameters);
-	void Run(Configuration configuration);
+	IStrategy<TParameters, TInputData> WithParams(Action<TParameters> parameters);
+	IStrategy<TParameters, TInputData> WithParams(TParameters parameters);
+	void Run(TInputData? configuration = null);
 }

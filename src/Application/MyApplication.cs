@@ -4,8 +4,10 @@ using Application.Exceptions;
 using Application.Services.Interfaces;
 using Application.Strategies;
 using Application.Strategies.Parameters;
+using Application.XmlSchemas;
 using CommandLine;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Reflection;
 
 namespace Application;
@@ -13,6 +15,7 @@ namespace Application;
 public class MyApplication(
 	IConfigurationService configurationService,
 	IStrategyFactory strategyFactory,
+	IFileManagerService fileManager,
 	ILogger<MyApplication> logger)
 {
 	private string? _fileName;
@@ -49,43 +52,56 @@ public class MyApplication(
 			throw;
 		}
 
-		var path = Path.Combine(exeDirectory, _fileName);
-
-		var config = configurationService.GetConfiguration(path);
+		if (rootArgument.ImportPath is { })
+		{
+			strategyFactory
+				.CreateWithoutData<ImportStrategy, ImportStrategyParameters>()
+				.WithParams(x => x.PathToConfiguration = rootArgument.ImportPath)
+				.Run();
+		}
 
 		if (rootArgument.StartProject is { })
 		{
 			strategyFactory
-				.Create<OpenProjectStrategy, OpenProjectStrategyParameters>()
+				.CreateConfigurationStrategy<OpenProjectStrategy, OpenProjectStrategyParameters>()
 				.WithParams(x => x.ProjectName = rootArgument.StartProject)
-				.Run(config);
+				.Run(GetConfiguration());
 		}
 
-		if (rootArgument.StartApplication is { })
+		else if (rootArgument.StartApplication is { })
 		{
 			strategyFactory
-				.Create<OpenApplicationStrategy, OpenApplicationStrategyParameters>()
+				.CreateConfigurationStrategy<OpenApplicationStrategy, OpenApplicationStrategyParameters>()
 				.WithParams(x => x.ProgramName = rootArgument.StartApplication)
-				.Run(config);
+				.Run(GetConfiguration());
 		}
 
-		if (rootArgument.DisplayProjects)
+		else if (rootArgument.DisplayProjects)
 		{
 			strategyFactory
-				.Create<DisplayProjectsStrategy, DisplayProjectsStrategyParameters>()
+				.CreateConfigurationStrategy<DisplayProjectsStrategy, DisplayProjectsStrategyParameters>()
 				.WithParams(ParseKwargs<DisplayProjectsOptions>(options.Kwargs).DisplayProjectsOptionsToParameters() ?? throw new NotFoundException("display projects params cant parse"))
-				.Run(config);
+				.Run(GetConfiguration());
 		}
 
-		if (rootArgument.DisplayApplications)
+		else if (rootArgument.DisplayApplications)
 		{
 			strategyFactory
-				.Create<DisplayApplicationStrategy, DisplayApplicationStrategyParameters>()
+				.CreateConfigurationStrategy<DisplayApplicationStrategy, DisplayApplicationStrategyParameters>()
 				.WithParams(ParseKwargs<DisplayApplicationsOptions>(options.Kwargs)?.DisplayApplicationOptionsToParameters() ?? throw new NotFoundException("display application params cant parse"))
-				.Run(config);
+				.Run(GetConfiguration());
 		}
 
 		return Task.CompletedTask;
+	}
+
+	private Configuration GetConfiguration()
+	{
+		NotFoundException.ThrowIfNull(_fileName);
+
+		var path = Path.Combine(fileManager.GetPathToConfigurationDirectory(), _fileName);
+
+		return configurationService.GetConfiguration(path);
 	}
 
 	private ParseArgumentsResult ParseArguments(string[] args)
@@ -97,7 +113,7 @@ public class MyApplication(
 			.GetProperties()
 			.Select(p => new { Attr = p.GetCustomAttribute<OptionAttribute>(), IsBool = p.PropertyType.IsAssignableTo(typeof(bool)) })
 			.Where(x => x != null)
-			.Select(x => new ArgSchema { Name = $"--{x.Attr!.LongName}", IsBool = x.IsBool })
+			.Select(x => new ArgSchema { Name = $"--{x.Attr!.LongName}", IsBool = x.IsBool, HelpText = x.Attr.HelpText})
 			.ToList();
 
 		for (var i = 0; i < args.Length; i++)
@@ -113,7 +129,10 @@ public class MyApplication(
 
 		if (rootArgIndex is null || argschema is null)
 		{
-			throw new NotFoundException("root argument not found");
+			throw new NotFoundException(
+				$"root argument not found:\n" +
+				string.Join("\n", rootArgsf.Select(x => $"{x.Name.PadRight(rootArgsf.Max(x => x.Name.Length))} {x.HelpText}"))
+			);
 		}
 
 		StartOptions? rootArg = null;

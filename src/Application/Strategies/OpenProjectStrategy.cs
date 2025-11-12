@@ -5,13 +5,13 @@ using Application.XmlSchemas;
 
 namespace Application.Strategies;
 
-public class OpenProjectStrategy : StrategyBase<OpenProjectStrategyParameters>
+public class OpenProjectStrategy : ConfigurationStrategyBase<OpenProjectStrategyParameters>
 {
 	private IStartApplicationService _startApplicationService;
 
 	public OpenProjectStrategy(IStartApplicationService startApplicationService)
 	{
-		_parameters = new OpenProjectStrategyParameters
+		Parameters = new OpenProjectStrategyParameters
 		{
 			ProjectName = string.Empty
 		};
@@ -21,10 +21,10 @@ public class OpenProjectStrategy : StrategyBase<OpenProjectStrategyParameters>
 
 	public override void Run(Configuration configuration)
 	{
-		ValidateStrategy();
+		ValidateStrategy(configuration);
 
-		var project = configuration.Projects.FirstOrDefault(x => x.Name == _parameters.ProjectName)
-			?? throw new NotFoundException($"project with name = {_parameters.ProjectName} not found");
+		var project = configuration.Projects.FirstOrDefault(x => x.Name == Parameters.ProjectName)
+			?? throw new NotFoundException($"project with name = {Parameters.ProjectName} not found");
 
 		var apps = configuration
 			.Programs

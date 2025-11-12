@@ -28,4 +28,10 @@ public class StartOptions
 
 	[Option("sa", HelpText = StartOptionsConstants.StartApplicationHelpText)]
 	public string? StartApplicationAliase { get => StartApplication; set => StartApplication = value; }
+
+	[Option("import", HelpText = StartOptionsConstants.ImportHelpText)]
+	public string? ImportPath { get; set; }
+
+	[Option("--im", HelpText = StartOptionsConstants.ImportHelpText)]
+	public string? ImportPathAliase { get => ImportPath; set => ImportPath = value; }
 }

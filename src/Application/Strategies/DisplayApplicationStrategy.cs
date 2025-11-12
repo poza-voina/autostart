@@ -3,16 +3,16 @@ using Application.XmlSchemas;
 
 namespace Application.Strategies;
 
-public class DisplayApplicationStrategy : StrategyBase<DisplayApplicationStrategyParameters>
+public class DisplayApplicationStrategy : ConfigurationStrategyBase<DisplayApplicationStrategyParameters>
 {
 	public DisplayApplicationStrategy()
 	{
-		_parameters = new DisplayApplicationStrategyParameters();
+		Parameters = new DisplayApplicationStrategyParameters();
 	}
 
 	public override void Run(Configuration configuration)
 	{
-		ValidateStrategy();
+		ValidateStrategy(configuration);
 
 		var applicationNames = configuration.Programs.Select(x => x.Name).ToList();
 

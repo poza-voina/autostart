@@ -1,17 +1,35 @@
 ﻿using Application.Exceptions;
 using Application.Strategies.Parameters;
-using Application.XmlSchemas;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Application.Strategies;
 
-public abstract class StrategyBase<TParameters> : IStrategy<TParameters> where TParameters : IParameters
+public abstract class StrategyBase<TParameters, TInputData> : IStrategy<TParameters, TInputData>
+	where TParameters : IParameters where TInputData : class, IData
 {
-	protected TParameters? _parameters;
+	private TParameters? _parameters;
+
+	protected TParameters Parameters
+	{
+		get
+		{
+			if (_parameters is null)
+			{
+				throw new NotFoundException("parameters not found");
+			}
+			return _parameters;
+		}
+
+		set
+		{
+			_parameters = value;
+		}
+	}
+
 	protected bool isParametersInitialized = false;
 
 	[MemberNotNull(nameof(_parameters))]
-	protected void ValidateStrategy()
+	protected void ValidateParameters()
 	{
 		if (_parameters is null)
 		{
@@ -19,9 +37,9 @@ public abstract class StrategyBase<TParameters> : IStrategy<TParameters> where T
 		}
 	}
 
-	public abstract void Run(Configuration configuration);
+	public abstract void Run(TInputData? configuration = null);
 
-	public IStrategy<TParameters> WithParams(Action<TParameters> parameters)
+	public IStrategy<TParameters, TInputData> WithParams(Action<TParameters> parameters)
 	{
 		NotFoundException.ThrowIfNull(_parameters);
 
@@ -31,7 +49,7 @@ public abstract class StrategyBase<TParameters> : IStrategy<TParameters> where T
 		return this;
 	}
 
-	public virtual IStrategy<TParameters> WithParams(TParameters parameters)
+	public virtual IStrategy<TParameters, TInputData> WithParams(TParameters parameters)
 	{
 		_parameters = parameters;
 

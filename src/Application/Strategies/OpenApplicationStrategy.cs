@@ -5,13 +5,13 @@ using Application.XmlSchemas;
 
 namespace Application.Strategies;
 
-public class OpenApplicationStrategy : StrategyBase<OpenApplicationStrategyParameters>
+public class OpenApplicationStrategy : ConfigurationStrategyBase<OpenApplicationStrategyParameters>
 {
 	private IStartApplicationService _startApplicationService;
 
 	public OpenApplicationStrategy(IStartApplicationService startApplicationService)
 	{
-		_parameters = new OpenApplicationStrategyParameters
+		Parameters = new OpenApplicationStrategyParameters
 		{
 			ProgramName = string.Empty
 		};
@@ -21,10 +21,10 @@ public class OpenApplicationStrategy : StrategyBase<OpenApplicationStrategyParam
 
 	public override void Run(Configuration configuration)
 	{
-		ValidateStrategy();
+		ValidateStrategy(configuration);
 
-		var program = configuration.Programs.FirstOrDefault(x => x.Name == _parameters.ProgramName)
-			?? throw new NotFoundException($"program with name = {_parameters.ProgramName} not found");
+		var program = configuration.Programs.FirstOrDefault(x => x.Name == Parameters.ProgramName)
+			?? throw new NotFoundException($"program with name = {Parameters.ProgramName} not found");
 
 		_startApplicationService.StartApplication(program);
 	}

@@ -1,5 +1,6 @@
 ﻿using Application.Strategies;
 using Application.Strategies.Parameters;
+using Application.XmlSchemas;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -11,15 +12,22 @@ public static class ServiceCollectionExtensions
 	{
 		var types = assembly.GetTypes();
 
-		var strategyBaseTypes = types
+		var parametersTypes = types
 		.Where(
 			x => x.GetInterfaces()
-			.Any(x => x.IsAssignableTo(typeof(IParameters))))
-		.Select(x => typeof(StrategyBase<>).MakeGenericType(x))
-		.ToArray();
+			.Any(x => x.IsAssignableTo(typeof(IParameters)))).ToList();
 
-		var strategyTypes = types.Where(x => strategyBaseTypes.Any(y => x.IsAssignableTo(y)));
+		var configurationStrategies = parametersTypes
+			.Select(x => typeof(StrategyBase<,>)
+			.MakeGenericType(x, typeof(Configuration)));
 
+		var strategiesWithoutData = parametersTypes
+			.Select(x => typeof(StrategyBase<,>).MakeGenericType(x, typeof(StrategyWithoutData)));
+
+		var strategyTypes = types
+			.Where(
+				x => configurationStrategies.Any(y => x.IsAssignableTo(y)) ||
+				strategiesWithoutData.Any(y => x.IsAssignableTo(y)));
 
 		foreach (var item in strategyTypes)
 		{

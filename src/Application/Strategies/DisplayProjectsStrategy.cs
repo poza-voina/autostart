@@ -3,20 +3,20 @@ using Application.XmlSchemas;
 
 namespace Application.Strategies;
 
-public class DisplayProjectsStrategy : StrategyBase<DisplayProjectsStrategyParameters>
+public class DisplayProjectsStrategy : ConfigurationStrategyBase<DisplayProjectsStrategyParameters>
 {
 	public DisplayProjectsStrategy()
 	{
-		_parameters = new DisplayProjectsStrategyParameters();
+		Parameters = new DisplayProjectsStrategyParameters();
 	}
 
 	public override void Run(Configuration configuration)
 	{
-		ValidateStrategy();
+		ValidateStrategy(configuration);
 
 		var projects = configuration.Projects.ToList();
 
-		if (_parameters.WithApplications)
+		if (Parameters.WithApplications)
 		{
 			foreach (var item in projects)
 			{
@@ -33,7 +33,7 @@ public class DisplayProjectsStrategy : StrategyBase<DisplayProjectsStrategyParam
 			}
 		}
 
-		else if (!_parameters.WithApplications)
+		else if (!Parameters.WithApplications)
 		{
 			foreach (var item in projects)
 			{

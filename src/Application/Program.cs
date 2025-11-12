@@ -1,4 +1,5 @@
 ﻿using Application;
+using Application.Constants;
 using Application.Extensions;
 using Application.Services;
 using Application.Services.Interfaces;
@@ -16,6 +17,7 @@ internal class Program
 		var builder = Host.CreateDefaultBuilder(args)
 			.ConfigureServices((context, services) =>
 			{
+				services.AddSingleton<IFileManagerService, FileManagerService>();
 				services.AddSingleton<MyApplication>();
 				services.AddSingleton<IConfigurationService, ConfigurationService>();
 				services.AddSingleton<IStrategyFactory, StrategyFactory>(x => new StrategyFactory(x.CreateScope().ServiceProvider));
@@ -28,20 +30,20 @@ internal class Program
 
 		builder.ConfigureLogging(x => { x.ClearProviders(); });
 
-		Log.Logger = new LoggerConfiguration()
-			.WriteTo.File(Path.Combine(AppContext.BaseDirectory, "autostart.log"))
-			.CreateLogger();
-
 		var host = builder.Build();
 
 		var services = host.Services;
+
+		Log.Logger = new LoggerConfiguration()
+			.WriteTo.File(Path.Combine(services.GetRequiredService<IFileManagerService>().GetRootDirectory(), FileNamesConstants.LogFileName))
+			.CreateLogger();
 
 		host.Start();
 
 		try
 		{
 			Log.Information("Application starting...");
-			services.GetRequiredService<MyApplication>().WithConfiguration("programs.xml").Run(args);
+			services.GetRequiredService<MyApplication>().WithConfiguration(FileNamesConstants.ConfigurationFileName).Run(args);
 			Log.Information("Application finished successfully");
 		}
 		catch (Exception ex)

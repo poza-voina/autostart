@@ -20,4 +20,8 @@
 		<Copy SourceFiles="..\..\deps\programs.xml" DestinationFolder="$(OutDir)" />
 		<Copy SourceFiles="..\..\deps\schema.xsd" DestinationFolder="$(OutDir)" />
 	</Target>
+
+	<Target Name="CopyDebugDeps" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+		<Copy SourceFiles="..\..\deps\schema.xsd" DestinationFolder="$(OutDir)" />
+	</Target>
 </Project>

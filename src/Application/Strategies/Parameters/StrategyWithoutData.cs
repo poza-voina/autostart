@@ -1,3 +1,3 @@
 ﻿namespace Application.Strategies.Parameters;
 
-public interface IParameters;
+public class StrategyWithoutData : IData;
