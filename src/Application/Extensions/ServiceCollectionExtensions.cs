@@ -17,12 +17,21 @@ public static class ServiceCollectionExtensions
 			x => x.GetInterfaces()
 			.Any(x => x.IsAssignableTo(typeof(IParameters)))).ToList();
 
+		var inputDataTypes = types
+		.Where(
+			x => x.GetInterfaces()
+			.Any(x => x.IsAssignableTo(typeof(IData)))).ToList();
+
+
 		var configurationStrategies = parametersTypes
-			.Select(x => typeof(StrategyBase<,>)
-			.MakeGenericType(x, typeof(Configuration)));
+			.SelectMany(
+				parameter => inputDataTypes,
+				(parameter, inputData) => typeof(StrategyWithInputBase<,>)
+				.MakeGenericType(parameter, inputData))
+			.ToList();
 
 		var strategiesWithoutData = parametersTypes
-			.Select(x => typeof(StrategyBase<,>).MakeGenericType(x, typeof(StrategyWithoutData)));
+			.Select(x => typeof(StrategyWithoutInputBase<>).MakeGenericType(x));
 
 		var strategyTypes = types
 			.Where(

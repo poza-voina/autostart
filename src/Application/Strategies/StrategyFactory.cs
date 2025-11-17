@@ -1,43 +1,25 @@
 ﻿using Application.Exceptions;
-using Application.Strategies.Parameters;
-using Application.XmlSchemas;
-using System.ComponentModel;
 
 namespace Application.Strategies;
 
 public class StrategyFactory(IServiceProvider serviceProvider) : IStrategyFactory
 {
-	public IStrategy<TParameters, TInputData> Create<TStrategy, TParameters, TInputData>()
-		where TStrategy : IStrategy<TParameters, TInputData>
-		where TParameters : IParameters
-		where TInputData : class, IData
+	public IStrategy<IWithoutInputStrategy<TParams>, TParams> CreateWithoutData<TStrategy, TParams>()
 	{
-		var strategy = serviceProvider.GetService(typeof(TStrategy)) as IStrategy<TParameters, TInputData>;
+		var strategy = serviceProvider.GetService(typeof(TStrategy)) as IStrategy<IWithoutInputStrategy<TParams>, TParams>;
 
 		NotFoundException.ThrowIfNull(strategy);
 
 		return strategy;
 	}
 
-	public IStrategy<TParameters, Configuration> CreateConfigurationStrategy<TStrategy, TParameters>()
-		where TStrategy : IStrategy<TParameters, Configuration>
-		where TParameters : IParameters
+	public IStrategy<IWithInputStrategy<TParams, TInputData>, TParams> CreateWithData<TStrategy, TParams, TInputData>()
 	{
-		var strategy = serviceProvider.GetService(typeof(TStrategy)) as IStrategy<TParameters, Configuration>;
+		var strategy = serviceProvider.GetService(typeof(TStrategy)) as IStrategy<IWithInputStrategy<TParams, TInputData>, TParams>;
 
 		NotFoundException.ThrowIfNull(strategy);
 
 		return strategy;
-	}
 
-	public IStrategy<TParameters, StrategyWithoutData> CreateWithoutData<TStrategy, TParameters>()
-		where TStrategy : IStrategy<TParameters, StrategyWithoutData>
-		where TParameters : IParameters
-	{
-		var strategy = serviceProvider.GetService(typeof(TStrategy)) as IStrategy<TParameters, StrategyWithoutData>;
-
-		NotFoundException.ThrowIfNull(strategy);
-
-		return strategy;
 	}
 }

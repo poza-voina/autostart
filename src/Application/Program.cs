@@ -40,6 +40,8 @@ internal class Program
 
 		host.Start();
 
+		args = [ "--dp", "--wa" ];
+
 		try
 		{
 			Log.Information("Application starting...");

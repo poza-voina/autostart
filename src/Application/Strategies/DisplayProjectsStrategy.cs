@@ -1,9 +1,10 @@
-﻿using Application.Strategies.Parameters;
+﻿using Application.Exceptions;
+using Application.Strategies.Parameters;
 using Application.XmlSchemas;
 
 namespace Application.Strategies;
 
-public class DisplayProjectsStrategy : ConfigurationStrategyBase<DisplayProjectsStrategyParameters>
+public class DisplayProjectsStrategy : StrategyWithInputBase<DisplayProjectsStrategyParameters, Configuration>
 {
 	public DisplayProjectsStrategy()
 	{
@@ -12,7 +13,10 @@ public class DisplayProjectsStrategy : ConfigurationStrategyBase<DisplayProjects
 
 	public override void Run(Configuration configuration)
 	{
-		ValidateStrategy(configuration);
+		if (configuration is null)
+		{
+			throw new NotFoundException("configuration not found");
+		}
 
 		var projects = configuration.Projects.ToList();
 

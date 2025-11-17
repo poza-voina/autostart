@@ -5,7 +5,7 @@ using Application.XmlSchemas;
 
 namespace Application.Strategies;
 
-public class OpenProjectStrategy : ConfigurationStrategyBase<OpenProjectStrategyParameters>
+public class OpenProjectStrategy : StrategyWithInputBase<OpenProjectStrategyParameters, Configuration>
 {
 	private IStartApplicationService _startApplicationService;
 
@@ -21,7 +21,10 @@ public class OpenProjectStrategy : ConfigurationStrategyBase<OpenProjectStrategy
 
 	public override void Run(Configuration configuration)
 	{
-		ValidateStrategy(configuration);
+		if (configuration is null)
+		{
+			throw new NotFoundException("configuration not found");
+		}
 
 		var project = configuration.Projects.FirstOrDefault(x => x.Name == Parameters.ProjectName)
 			?? throw new NotFoundException($"project with name = {Parameters.ProjectName} not found");

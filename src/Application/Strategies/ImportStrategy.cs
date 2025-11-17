@@ -5,7 +5,7 @@ using Application.Strategies.Parameters;
 
 namespace Application.Strategies;
 
-public class ImportStrategy : WithoutParamsStrategyBase<ImportStrategyParameters>
+public class ImportStrategy : StrategyWithoutInputBase<ImportStrategyParameters>
 {
 	private IConfigurationService _configurationService;
 	private IFileManagerService _fileManagerService;
@@ -17,10 +17,8 @@ public class ImportStrategy : WithoutParamsStrategyBase<ImportStrategyParameters
 		_fileManagerService = fileManagerService;
 	}
 
-	public override void Run(StrategyWithoutData? configuration = null)
+	public override void Run()
 	{
-		ValidateStrategy();
-
 		if (Parameters.PathToConfiguration is null)
 		{
 			throw new NotFoundException("Path to configuration-xml not found");

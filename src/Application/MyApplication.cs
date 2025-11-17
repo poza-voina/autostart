@@ -63,7 +63,7 @@ public class MyApplication(
 		if (rootArgument.StartProject is { })
 		{
 			strategyFactory
-				.CreateConfigurationStrategy<OpenProjectStrategy, OpenProjectStrategyParameters>()
+				.CreateWithData<OpenProjectStrategy, OpenProjectStrategyParameters, Configuration>()
 				.WithParams(x => x.ProjectName = rootArgument.StartProject)
 				.Run(GetConfiguration());
 		}
@@ -71,7 +71,7 @@ public class MyApplication(
 		else if (rootArgument.StartApplication is { })
 		{
 			strategyFactory
-				.CreateConfigurationStrategy<OpenApplicationStrategy, OpenApplicationStrategyParameters>()
+				.CreateWithData<OpenApplicationStrategy, OpenApplicationStrategyParameters, Configuration>()
 				.WithParams(x => x.ProgramName = rootArgument.StartApplication)
 				.Run(GetConfiguration());
 		}
@@ -79,7 +79,7 @@ public class MyApplication(
 		else if (rootArgument.DisplayProjects)
 		{
 			strategyFactory
-				.CreateConfigurationStrategy<DisplayProjectsStrategy, DisplayProjectsStrategyParameters>()
+				.CreateWithData<DisplayProjectsStrategy, DisplayProjectsStrategyParameters, Configuration>()
 				.WithParams(ParseKwargs<DisplayProjectsOptions>(options.Kwargs).DisplayProjectsOptionsToParameters() ?? throw new NotFoundException("display projects params cant parse"))
 				.Run(GetConfiguration());
 		}
@@ -87,7 +87,7 @@ public class MyApplication(
 		else if (rootArgument.DisplayApplications)
 		{
 			strategyFactory
-				.CreateConfigurationStrategy<DisplayApplicationStrategy, DisplayApplicationStrategyParameters>()
+				.CreateWithData<DisplayApplicationStrategy, DisplayApplicationStrategyParameters, Configuration>()
 				.WithParams(ParseKwargs<DisplayApplicationsOptions>(options.Kwargs)?.DisplayApplicationOptionsToParameters() ?? throw new NotFoundException("display application params cant parse"))
 				.Run(GetConfiguration());
 		}

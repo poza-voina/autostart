@@ -5,7 +5,7 @@ using Application.XmlSchemas;
 
 namespace Application.Strategies;
 
-public class OpenApplicationStrategy : ConfigurationStrategyBase<OpenApplicationStrategyParameters>
+public class OpenApplicationStrategy : StrategyWithInputBase<OpenApplicationStrategyParameters, Configuration>
 {
 	private IStartApplicationService _startApplicationService;
 
@@ -21,7 +21,10 @@ public class OpenApplicationStrategy : ConfigurationStrategyBase<OpenApplication
 
 	public override void Run(Configuration configuration)
 	{
-		ValidateStrategy(configuration);
+		if (configuration is null)
+		{
+			throw new NotFoundException("configuration not found");
+		}
 
 		var program = configuration.Programs.FirstOrDefault(x => x.Name == Parameters.ProgramName)
 			?? throw new NotFoundException($"program with name = {Parameters.ProgramName} not found");
