@@ -1,6 +1,5 @@
 ﻿using Application.Strategies;
-using Application.Strategies.Parameters;
-using Application.XmlSchemas;
+using AutoStart.Abstractions.ArgumentStrategies.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 

@@ -1,9 +1,10 @@
 ﻿using Application;
-using Application.Constants;
 using Application.Extensions;
-using Application.Services;
-using Application.Services.Interfaces;
 using Application.Strategies;
+using AutoStart.Abstractions.ArgumentStrategies.Interfaces;
+using AutoStart.Abstractions.Constants;
+using AutoStart.StartPlugin.Services;
+using AutoStart.StartPlugin.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

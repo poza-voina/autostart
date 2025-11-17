@@ -1,13 +1,14 @@
 ﻿using Application.ArgumentData;
 using Application.ArgumentOptions;
-using Application.Exceptions;
-using Application.Services.Interfaces;
-using Application.Strategies;
-using Application.Strategies.Parameters;
-using Application.XmlSchemas;
+using AutoStart.Abstractions.ArgumentStrategies.Interfaces;
+using AutoStart.Abstractions.Exceptions;
+using AutoStart.StartPlugin.ArgumentOptions;
+using AutoStart.StartPlugin.Services.Interfaces;
+using AutoStart.StartPlugin.Strategies;
+using AutoStart.StartPlugin.Strategies.Parameters;
+using AutoStart.StartPlugin.XmlSchemas;
 using CommandLine;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Reflection;
 
 namespace Application;
@@ -65,7 +66,8 @@ public class MyApplication(
 			strategyFactory
 				.CreateWithData<OpenProjectStrategy, OpenProjectStrategyParameters, Configuration>()
 				.WithParams(x => x.ProjectName = rootArgument.StartProject)
-				.Run(GetConfiguration());
+				.WithInputData(GetConfiguration())
+				.Run();
 		}
 
 		else if (rootArgument.StartApplication is { })
@@ -73,7 +75,8 @@ public class MyApplication(
 			strategyFactory
 				.CreateWithData<OpenApplicationStrategy, OpenApplicationStrategyParameters, Configuration>()
 				.WithParams(x => x.ProgramName = rootArgument.StartApplication)
-				.Run(GetConfiguration());
+				.WithInputData(GetConfiguration())
+				.Run();
 		}
 
 		else if (rootArgument.DisplayProjects)
@@ -81,7 +84,8 @@ public class MyApplication(
 			strategyFactory
 				.CreateWithData<DisplayProjectsStrategy, DisplayProjectsStrategyParameters, Configuration>()
 				.WithParams(ParseKwargs<DisplayProjectsOptions>(options.Kwargs).DisplayProjectsOptionsToParameters() ?? throw new NotFoundException("display projects params cant parse"))
-				.Run(GetConfiguration());
+				.WithInputData(GetConfiguration())
+				.Run();
 		}
 
 		else if (rootArgument.DisplayApplications)
@@ -89,7 +93,8 @@ public class MyApplication(
 			strategyFactory
 				.CreateWithData<DisplayApplicationStrategy, DisplayApplicationStrategyParameters, Configuration>()
 				.WithParams(ParseKwargs<DisplayApplicationsOptions>(options.Kwargs)?.DisplayApplicationOptionsToParameters() ?? throw new NotFoundException("display application params cant parse"))
-				.Run(GetConfiguration());
+				.WithInputData(GetConfiguration())
+				.Run();
 		}
 
 		return Task.CompletedTask;
