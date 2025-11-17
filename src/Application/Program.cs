@@ -1,31 +1,34 @@
 ﻿using Application;
-using Application.Constants;
 using Application.Extensions;
-using Application.Services;
-using Application.Services.Interfaces;
+using Application.PluginIntegration;
 using Application.Strategies;
+using AutoStart.Abstractions.ArgumentStrategies.Interfaces;
+using AutoStart.StartPlugin.Constants;
+using AutoStart.StartPlugin.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using System.Reflection;
 
 internal class Program
 {
 	private static void Main(string[] args)
 	{
+		var path = Path.Combine(AppContext.BaseDirectory, "Plugins");
+		var pluginAssemblies = PluginLoader.LoadPluginAssemblies(path) ?? throw new Exception("Плагины не загрузились");
+
 		var builder = Host.CreateDefaultBuilder(args)
 			.ConfigureServices((context, services) =>
 			{
-				services.AddSingleton<IFileManagerService, FileManagerService>();
+				services.AddSingleton<IPluginRunner, PluginRunner>();
+
 				services.AddSingleton<MyApplication>();
-				services.AddSingleton<IConfigurationService, ConfigurationService>();
 				services.AddSingleton<IStrategyFactory, StrategyFactory>(x => new StrategyFactory(x.CreateScope().ServiceProvider));
-				services.AddScoped<IStartApplicationService, StartApplicationService>();
-
-				services.AddStrategyFactory(Assembly.GetExecutingAssembly());
-
-				var a = services.Select(x => x.ServiceType).ToList();
+				services.AddStrategyFactory(pluginAssemblies);
+				foreach (var assembly in pluginAssemblies)
+				{
+					PluginLoader.LoadPluginServices(services, assembly);
+				}
 			});
 
 		builder.ConfigureLogging(x => { x.ClearProviders(); });
@@ -35,15 +38,18 @@ internal class Program
 		var services = host.Services;
 
 		Log.Logger = new LoggerConfiguration()
-			.WriteTo.File(Path.Combine(services.GetRequiredService<IFileManagerService>().GetRootDirectory(), FileNamesConstants.LogFileName))
+			.WriteTo.File(Path.Combine(services.GetRequiredService<IFileManagerService>().GetRootDirectory(), "autostart.log"))
 			.CreateLogger();
 
 		host.Start();
 
+
+		args = ["--test"];
+
 		try
 		{
 			Log.Information("Application starting...");
-			services.GetRequiredService<MyApplication>().WithConfiguration(FileNamesConstants.ConfigurationFileName).Run(args);
+			services.GetRequiredService<MyApplication>().Run(args);
 			Log.Information("Application finished successfully");
 		}
 		catch (Exception ex)
