@@ -1,4 +1,4 @@
-﻿namespace Application.ArgumentData;
+﻿namespace AutoStart.Abstractions.ArgumentData;
 
 public class ArgSchema
 {

@@ -1,4 +1,4 @@
-﻿using AutoStart.Abstractions.Constants;
+﻿using AutoStart.StartPlugin.Constants;
 using CommandLine;
 
 namespace Application.ArgumentOptions;

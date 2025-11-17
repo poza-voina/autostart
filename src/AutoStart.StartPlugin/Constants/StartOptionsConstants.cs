@@ -1,4 +1,4 @@
-﻿namespace AutoStart.Abstractions.Constants;
+﻿namespace AutoStart.StartPlugin.Constants;
 
 public static class StartOptionsConstants
 {

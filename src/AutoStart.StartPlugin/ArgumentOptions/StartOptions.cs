@@ -1,9 +1,10 @@
-﻿using AutoStart.Abstractions.Constants;
+﻿using AutoStart.Abstractions.Plugin;
+using AutoStart.StartPlugin.Constants;
 using CommandLine;
 
 namespace Application.ArgumentOptions;
 
-public class StartOptions
+public class StartOptions : IRootArgument
 {
 	[Option("start-project", HelpText = StartOptionsConstants.StartProjectHelpText)]
 	public string? StartProject { get; set; }

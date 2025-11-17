@@ -7,7 +7,15 @@ namespace Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-	public static void AddStrategyFactory(this IServiceCollection services, Assembly assembly)
+	public static void AddStrategyFactory(this IServiceCollection services, IEnumerable<Assembly> assemblies)
+	{
+		foreach ( var item in assemblies)
+		{
+			ProduceAssembly(services, item);
+		}
+	}
+
+	private static void ProduceAssembly(IServiceCollection services, Assembly assembly)
 	{
 		var types = assembly.GetTypes();
 
